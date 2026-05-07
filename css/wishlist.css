@@ -1,0 +1,176 @@
+html, body {
+    cursor: url('../cursor/icons8-hanger-40.png') 20 20, auto;
+}
+
+a, button, .btn-primary, .btn-reg, .btn-login {
+    cursor: url('../cursor/cursor-pointer.png') 10 0, pointer;
+}
+
+/* Ensure the container is a column layout */
+.wishlist-container .header-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Fix the title section so it doesn't shrink or float */
+.wishlist-title-section {
+    width: 100%;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+    text-align: left;
+}
+
+.wishlist-title-section h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+/* Ensure the table area takes full width */
+.wishlist-content {
+    width: 100%;
+}
+
+.wishlist-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto; /* Allows columns to size naturally */
+}
+
+.wishlist-container {
+    padding: 40px 0;
+    min-height: 60vh;
+}
+
+.wishlist-table th {
+    text-align: left;
+    padding: 15px;
+    background: #fbfbfb;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: #888;
+}
+
+.wishlist-row {
+    border-bottom: 1px solid #eee;
+    transition: background 0.3s ease;
+}
+
+.wishlist-row:hover {
+    background: #fafafa;
+}
+
+.wishlist-row td {
+    padding: 25px 15px;
+    vertical-align: middle;
+}
+
+/* Product Info Cell */
+.wish-prod-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.wish-prod-info img {
+    width: 90px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 4px;
+    background: #f5f5f5;
+}
+
+.wish-prod-details .brand-label {
+    display: block;
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.wish-prod-details h4 {
+    font-size: 16px;
+    margin: 0;
+    font-weight: 600;
+    color: #000;
+}
+
+/* Price and Status */
+.wishlist-price {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.stock-status {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.stock-status.in-stock { color: #27ae60; }
+.stock-status.out-of-stock { color: #e74c3c; }
+
+/* Actions */
+.btn-wish-cart {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    letter-spacing: 0.5px;
+}
+
+.btn-wish-cart:hover {
+    background: #333;
+}
+
+.remove-wish {
+    color: #ccc;
+    font-size: 24px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.remove-wish:hover {
+    color: #ff4d4d;
+}
+
+/* Empty State */
+.empty-wishlist {
+    text-align: center;
+    padding: 100px 0;
+}
+
+.empty-wishlist p {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 25px;
+}
+.subheader {
+    width: 100%;
+    /* Ensure there's a border or background if needed to match theme */
+    border-bottom: 1px solid #eee; 
+    padding: 30px 0;
+}
+
+.subheader .header-container {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    text-align: center;
+}
+
+.subheader-nav {
+    display: flex;
+    gap: 10px;               /* Adds space between 'Shop' and 'MY WISHLIST' */
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}

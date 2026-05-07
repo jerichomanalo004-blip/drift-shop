@@ -1,0 +1,273 @@
+/* --- Global Reset & Base --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: transparent;
+}
+
+/* --- Overlay & Container --- */
+.auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    display: flex;
+    justify-content: center;
+    align-items: justify;
+    overflow-y: auto;
+    padding: 60px 20px;
+}
+
+.auth-container {
+    position: relative;
+    width: auto;
+    animation: fadeIn 0.3s ease-out;
+    z-index: 10001;
+}
+
+/* --- The Card (Standard Login) --- */
+.auth-card {
+    background: rgba(20, 20, 20, 0.6);
+    padding: 100px;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 850px; 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0px 20px rgba(0, 0, 0, 0.5);
+    color: white;
+}
+
+/* --- The Card (Crosswise Register) --- */
+.auth-card.register-crosswise {
+    max-width: 800px; /* Wider for the 2-column layout */
+}
+
+/* --- Form Grid & Layouts --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* --- Typography & Elements --- */
+.auth-card h2 {
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+/* --- Inputs, Selects & Textarea --- */
+.form-group input, 
+select.form-input, 
+textarea {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-radius: 10px;
+    outline: none;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    
+}
+
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+    width: 100%;
+    /* Define a fixed height for all single-line inputs */
+    height: 48px; 
+    
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    
+    /* This ensures padding doesn't add to the total height */
+    box-sizing: border-box; 
+    display: block;
+    outline: none;
+}
+
+/* Exception: Textarea needs to be taller, but uses the same styling */
+.form-group textarea {
+    height: auto; 
+    min-height: 80px; 
+}
+
+/* Fix for Gender (Select) vertical alignment on Mac/Safari */
+select.form-input {
+    line-height: 1.2;
+    appearance: none; /* Removes the default OS styling */
+    -webkit-appearance: none;
+}
+/* --- Buttons & Links --- */
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: #000000;
+    color: hsl(0, 26%, 96%);
+    border: none;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background: #ddd;
+}
+
+.footer-text {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #888;
+}
+
+.footer-text a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.close-btn {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: white;
+    font-size: 30px;
+    text-decoration: none;
+    font-weight: 200;
+}
+
+.forgot-wrapper {
+    display: flex;
+    justify-content: flex-end; /* Pushes the link to the right */
+    margin-top: 8px;           /* Space between the input box and the link */
+}
+
+.forgot-link {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #666;               /* Subtle grey to match the DRIFT theme */
+    text-decoration: none;
+    letter-spacing: 1.5px;
+    transition: 0.3s ease;
+}
+
+.forgot-link:hover {
+    color: #fff;               /* Glows white on hover */
+    text-decoration: underline;
+}
+
+/* --- Animations & Responsive --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .auth-card.register-crosswise {
+        max-width: 450px;
+    }
+}
+
+.register-crosswise {
+    max-width: 550px; /* Adjust this to make it wider or narrower */
+}
+
+/* Specific spacing for the row elements */
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 0px; /* Let the form-group handle the bottom margin */
+}
+
+.form-row .form-group {
+    flex: 1; /* Makes both inputs in a row equal width */
+}
+
+/* Styling the textarea to match your inputs */
+textarea {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-radius: 8px;
+    resize: none;
+    font-family: inherit;
+}
+
+.forgot-link {
+    position: relative; 
+    z-index: 100;
+    pointer-events: auto; /* Force it to accept mouse clicks */
+}
+
+.system-alert {
+    background: #fff;
+    color: #ff4747; /* Drift Red */
+    border: 1px solid #ff4747;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+    text-align: center;
+    /* Optional: subtle shake effect to get attention */
+    animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}

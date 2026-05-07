@@ -1,0 +1,277 @@
+/* cart.css - DRIFT Modern Cart Design */
+
+/* 1. Main Layout & Centering */
+.subheader {
+    width: 100%;
+    border-bottom: 1px solid #eee; 
+    padding: 30px 0;
+}
+
+.subheader .header-container {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    text-align: center;
+}
+
+.subheader-nav {
+    display: flex;
+    gap: 10px;               /* Adds space between 'Shop' and 'MY WISHLIST' */
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.cart-main-container {
+    width: 100%;
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    padding: 60px 0;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+.cart-main-container .header-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto !important;
+    float: none !important;
+    display: block !important;
+}
+
+/* 2. Title Section */
+.cart-title-section {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.cart-title-section h2 {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.cart-title-section p {
+    color: #888;
+    font-size: 14px;
+}
+
+/* 3. The Cart Table */
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.cart-table th {
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #bbb;
+    padding: 20px 15px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.cart-table td {
+    padding: 30px 15px;
+    border-bottom: 1px solid #f9f9f9;
+    vertical-align: middle;
+}
+
+/* 4. Product Info Cell */
+.cart-prod-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.cart-prod-info img {
+    width: 85px;
+    height: 105px;
+    object-fit: cover;
+    background-color: #f5f5f5;
+    border-radius: 2px;
+}
+
+.brand-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #aaa;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.cart-prod-details h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: #111;
+}
+
+/* 5. Quantity Controls */
+/* Container stays the same size as before */
+.qty-controls {
+    display: flex;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    width: fit-content;
+    height: 32px; /* Matches your button height */
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+/* Fix the Input to look like the original span */
+.qty-input {
+    width: 35px; /* Original width */
+    height: 100%;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    padding: 0;
+    margin: 0;
+    -moz-appearance: textfield; /* Hides arrows for Firefox */
+}
+
+/* Hides the up/down arrows for Chrome, Safari, and Edge */
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.qty-input:focus {
+    outline: none;
+}
+
+/* Ensure buttons stay the same size */
+.qty-btn {
+    background: #fff;
+    border: none;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+/* Removes arrows in Chrome, Safari, Edge */
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.qty-input:focus {
+    outline: none;
+    background-color: #f9f9f9;
+}
+
+/* 6. Buy Now & Remove Buttons */
+.buy-now-btn {
+    background: #000;
+    color: #fff;
+    border: 2px solid #000;
+    padding: 10px 20px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    text-transform: uppercase;
+}
+
+.buy-now-btn:hover {
+    background: #fff;
+    color: #000;
+}
+
+.remove-cart-item {
+    color: #ddd;
+    font-size: 28px;
+    text-decoration: none;
+    transition: color 0.2s;
+    line-height: 1;
+}
+
+.remove-cart-item:hover {
+    color: #ff4d4d;
+}
+
+/* 7. Summary & Total Section */
+.cart-summary {
+    margin-top: 50px;
+    padding: 40px;
+    background-color: #fafafa;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    border-top: 2px solid #111;
+}
+
+.cart-summary h3 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 25px;
+}
+
+.checkout-btn {
+    background: #111;
+    color: #fff;
+    border: none;
+    padding: 20px 80px;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: uppercase;
+}
+
+.checkout-btn:hover {
+    background: #333;
+    letter-spacing: 3px;
+}
+
+/* 8. Empty Cart Display */
+.empty-cart-display {
+    padding: 100px 0;
+    text-align: center;
+}
+
+.empty-cart-display p {
+    font-size: 18px;
+    color: #888;
+    margin-bottom: 25px;
+}
+
+/* 9. Responsive Table Layout */
+@media (max-width: 768px) {
+    .cart-table thead { display: none; }
+    .cart-table tr { display: block; margin-bottom: 30px; border-bottom: 2px solid #eee; }
+    .cart-table td { 
+        display: block; 
+        text-align: right; 
+        padding: 12px 0; 
+        border: none; 
+    }
+    .cart-table td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 11px;
+        color: #aaa;
+    }
+    .cart-prod-info { justify-content: flex-end; }
+    .cart-summary { align-items: center; }
+}
+
