@@ -188,4 +188,62 @@ class Order extends Model {
         $stmt->execute();
         return $stmt->fetchAll();
     }
+
+    public function getCategorySalesByMonth($year = null, $month = null) {
+        if ($year === null) {
+            $year = date('Y');
+        }
+        if ($month === null) {
+            $month = date('m');
+        }
+
+        $sql = "
+            SELECT c.category_name, COALESCE(SUM(oi.quantity), 0) as units
+            FROM categories c
+            LEFT JOIN products p ON p.category_id = c.id
+            LEFT JOIN product_variants pv ON pv.product_id = p.id
+            LEFT JOIN (
+                SELECT variant_id, SUM(quantity) as quantity
+                FROM order_items oi
+                JOIN orders o ON oi.order_id = o.id AND o.status != 'Cancelled'
+                WHERE YEAR(o.created_at) = ? AND MONTH(o.created_at) = ?
+                GROUP BY variant_id
+            ) oi ON oi.variant_id = pv.id
+            GROUP BY c.category_name
+            ORDER BY units DESC
+            LIMIT 5
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$year, $month]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getBrandSalesByMonth($year = null, $month = null) {
+        if ($year === null) {
+            $year = date('Y');
+        }
+        if ($month === null) {
+            $month = date('m');
+        }
+
+        $sql = "
+            SELECT c.brand, COALESCE(SUM(oi.quantity), 0) as units
+            FROM categories c
+            LEFT JOIN products p ON p.category_id = c.id
+            LEFT JOIN product_variants pv ON pv.product_id = p.id
+            LEFT JOIN (
+                SELECT variant_id, SUM(quantity) as quantity
+                FROM order_items oi
+                JOIN orders o ON oi.order_id = o.id AND o.status != 'Cancelled'
+                WHERE YEAR(o.created_at) = ? AND MONTH(o.created_at) = ?
+                GROUP BY variant_id
+            ) oi ON oi.variant_id = pv.id
+            WHERE c.brand IS NOT NULL AND c.brand != ''
+            GROUP BY c.brand
+            ORDER BY units DESC
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$year, $month]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }

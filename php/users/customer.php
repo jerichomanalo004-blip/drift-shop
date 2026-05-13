@@ -23,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
     $data = [
         'first_name' => $_POST['first_name'],
         'last_name'  => $_POST['last_name'],
+        'contact_number' => $_POST['contact_number'],
         'email'      => $_POST['email'],
         'address'    => $_POST['address']
     ];
@@ -70,6 +71,10 @@ $user = $userModel->find($userId);
                 <div class="info-group">
                     <label>Last Name</label>
                     <input type="text" name="last_name" value="<?= htmlspecialchars($user['last_name'] ?? '') ?>" required>
+                </div>
+                <div class="info-group" style="grid-column: 1 / -1;">
+                    <label>Contact Number</label>
+                    <input type="text" name="contact_number" value="<?= htmlspecialchars($user['contact_number'] ?? '') ?>" required>
                 </div>
                 <div class="info-group" style="grid-column: 1 / -1;">
                     <label>Email Address</label>

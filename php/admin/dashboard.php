@@ -37,10 +37,15 @@ for ($i = 5; $i >= 0; $i--) {
     $monthlyProfit[] = $rev - $costM;
 }
 
-// Brand distribution
-$brandDist = $productModel->getBrandDistribution();
-// Category sales performance
-$catPerf = $orderModel->getCategorySales();
+// Get current year and month for monthly metrics
+$currentYear = date('Y');
+$currentMonth = date('m');
+$currentMonthName = date('F Y');
+
+// Category sales performance (current month only)
+$catPerf = $orderModel->getCategorySalesByMonth($currentYear, $currentMonth);
+// Brand sales (current month only)
+$brandSales = $orderModel->getBrandSalesByMonth($currentYear, $currentMonth);
 // Recent orders
 $recentOrders = $orderModel->getRecentOrders(5);
 
@@ -76,32 +81,46 @@ include __DIR__ . '/includes/header.php';
     <!-- Efficiency Metrics - spans rows 1 and 2, column 3 -->
     <div class="intel-card efficiency-card">
         <h3>Efficiency Metrics</h3>
-        <p class="small-muted">Category sales vs. targets (goal: 100 units).</p>
+        <p class="small-muted">Category sales for <?= $currentMonthName ?> (goal: 100 units).</p>
         <div class="progress-list">
             <?php foreach ($catPerf as $cat): 
                 $units = $cat['units'];
                 $percent = min(100, ($units / 100) * 100);
+                $goalReached = $units >= 100;
+                $barColor = $goalReached ? '#1a7f37' : '#0969da';
             ?>
             <div class="progress-item">
-                <div class="progress-label"><?= htmlspecialchars($cat['category_name']) ?></div>
-                <div class="progress-bar"><div style="width: <?= $percent ?>%"></div></div>
+                <div class="progress-label">
+                    <?= htmlspecialchars($cat['category_name']) ?>
+                    <?php if ($goalReached): ?>
+                        <span style="margin-left: 8px; font-size: 12px; background: #1a7f37; color: white; padding: 2px 6px; border-radius: 3px; font-weight: 600;">✓ Goal</span>
+                    <?php endif; ?>
+                </div>
+                <div class="progress-bar"><div style="width: <?= $percent ?>%; background: <?= $barColor ?>;"></div></div>
                 <div class="progress-value"><?= $units ?> / 100 units</div>
             </div>
             <?php endforeach; ?>
         </div>
 
         <div style="margin-top: 30px;">
-            <h3>Brand Velocity (goal: 100 SKUs)</h3>
-            <?php foreach ($brandDist as $brand): 
-                $skuCount = $brand['count'];
-                $percent = min(100, ($skuCount / 100) * 100);
+            <h3>Monthly Brand Sales - <?= $currentMonthName ?> (goal: 100 units)</h3>
+            <?php foreach ($brandSales as $brand): 
+                $units = $brand['units'];
+                $percent = min(100, ($units / 100) * 100);
+                $goalReached = $units >= 100;
+                $barColor = $goalReached ? '#1a7f37' : '#1f6feb';
             ?>
             <div class="brand-item" style="flex-direction: column; align-items: stretch; gap: 6px; margin-bottom: 16px;">
-                <div style="display: flex; justify-content: space-between;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span class="brand-name"><?= htmlspecialchars($brand['brand']) ?></span>
-                    <span class="brand-count"><?= $skuCount ?> / 100 SKUs</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="brand-count"><?= $units ?> / 100 units</span>
+                        <?php if ($goalReached): ?>
+                            <span style="font-size: 12px; background: #1a7f37; color: white; padding: 2px 6px; border-radius: 3px; font-weight: 600;">✓ Goal</span>
+                        <?php endif; ?>
+                    </div>
                 </div>
-                <div class="progress-bar" style="width: 100%;"><div style="width: <?= $percent ?>%; height: 6px; background: var(--suite-success); border-radius: 6px;"></div></div>
+                <div class="progress-bar" style="width: 100%;"><div style="width: <?= $percent ?>%; height: 6px; background: <?= $barColor ?>; border-radius: 6px;"></div></div>
             </div>
             <?php endforeach; ?>
         </div>
@@ -111,22 +130,32 @@ include __DIR__ . '/includes/header.php';
             <h3 style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;">Efficiency Insight</h3>
             <p style="color: var(--text-muted); font-size: 12px; line-height: 1.5; margin: 0;">
                 <?php
-                // Calculate average category performance relative to target
+                // Calculate average category performance relative to target (monthly)
                 $totalCatPercent = 0;
                 $catCount = count($catPerf);
+                $categoriesReachedGoal = 0;
                 foreach ($catPerf as $cat) {
-                    $totalCatPercent += min(100, ($cat['units'] / 100) * 100);
+                    $catPercent = min(100, ($cat['units'] / 100) * 100);
+                    $totalCatPercent += $catPercent;
+                    if ($cat['units'] >= 100) $categoriesReachedGoal++;
                 }
                 $avgCatPercent = $catCount > 0 ? round($totalCatPercent / $catCount) : 0;
                 
-                // Find best and worst performing categories
-                $bestCat = $catPerf[0]['category_name'] ?? 'N/A';
-                $worstCat = end($catPerf)['category_name'] ?? 'N/A';
+                // Find best and worst performing categories this month
+                $bestCat = !empty($catPerf) ? $catPerf[0]['category_name'] : 'N/A';
+                $worstCatArray = !empty($catPerf) ? end($catPerf) : null;
+                $worstCat = $worstCatArray ? $worstCatArray['category_name'] : 'N/A';
+                
+                // Brand metrics
+                $brandCount = count($brandSales);
+                $brandsReachedGoal = 0;
+                foreach ($brandSales as $brand) {
+                    if ($brand['units'] >= 100) $brandsReachedGoal++;
+                }
                 ?>
-                Categories are achieving <strong><?= $avgCatPercent ?>%</strong> of the 100‑unit target on average. 
-                <strong><?= htmlspecialchars($bestCat) ?></strong> leads in sales volume, while 
-                <strong><?= htmlspecialchars($worstCat) ?></strong> shows the lowest traction. 
-                Brands with SKU counts below 50 may require marketing support to reach velocity goals.
+                This month, categories are achieving <strong><?= $avgCatPercent ?>%</strong> of the 100‑unit target on average (<strong><?= $categoriesReachedGoal ?>/<?= $catCount ?></strong> at goal). 
+                <strong><?= htmlspecialchars($bestCat) ?></strong> leads in sales, while <strong><?= htmlspecialchars($worstCat) ?></strong> shows the lowest traction. 
+                <strong><?= $brandsReachedGoal ?>/<?= $brandCount ?></strong> brands have reached the monthly sales target of 100 units.
             </p>
         </div>
     </div>
