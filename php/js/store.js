@@ -265,3 +265,5 @@ window.onload = function() {
         window.history.replaceState({}, document.title, "store.php");
     }
 };
+
+

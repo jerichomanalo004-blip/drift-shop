@@ -40,13 +40,20 @@ class CartService {
     public function getItems() {
         $cart = SessionManager::get($this->cartKey, []);
         $items = [];
+        $db = \Core\Database::getInstance()->getConnection();
         foreach ($cart as $key => $item) {
             $parts = explode('_', $key);
-            // Use getProductWithBrand() instead of find()
-            $product = $this->productModel->getProductWithBrand($parts[0]);
+            $productId = $parts[0];
+            $stmt = $db->prepare("SELECT * FROM products WHERE id = ?");
+            $stmt->execute([$productId]);
+            $product = $stmt->fetch(\PDO::FETCH_ASSOC);
             if ($product) {
+                // Determine product name column dynamically
+                $productName = $product['product_name'] ?? $product['name'] ?? $product['title'] ?? 'Product';
+                // Add a custom key for JavaScript
+                $product['product_name'] = $productName;
                 $items[$key] = [
-                    'product' => $product,   // now contains 'brand' key
+                    'product' => $product,
                     'size'    => $parts[1] ?? 'N/A',
                     'qty'     => $item['qty'],
                     'subtotal'=> $product['price'] * $item['qty']

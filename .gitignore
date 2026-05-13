@@ -1,0 +1,29 @@
+# Database config (contains password)
+config/database.php
+
+# Composer dependencies (can be reinstalled via `composer install`)
+vendor/
+
+# Uploaded product images (if you don't want to store images in GitHub)
+shirts/
+
+# Log files
+logs/
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# IDE folders
+.idea/
+.vscode/
+
+# Backup files
+*.bak
+*.sql
+*.zip
+
+# Node modules (if you ever use frontend build tools)
+node_modules/
+

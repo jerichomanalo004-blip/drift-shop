@@ -6,7 +6,7 @@ use Core\SessionManager;
 
 class User extends Model {
     protected $table = 'users';
-    protected $fillable = ['first_name', 'last_name', 'email', 'password', 'role', 'age', 'gender', 'contact_number', 'address'];
+    protected $fillable = ['first_name', 'last_name', 'birthdate', 'age', 'email', 'password', 'gender', 'contact_number', 'address'];
 
     public function login($email, $password) {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
@@ -15,7 +15,6 @@ class User extends Model {
         if ($user && password_verify($password, $user['password'])) {
             SessionManager::set('user_id', $user['id']);
             SessionManager::set('user_name', $user['first_name']);
-            SessionManager::set('role', 'customer');
             return true;
         }
         return false;
@@ -23,12 +22,20 @@ class User extends Model {
 
     public function register(array $data) {
         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        // If address is not provided, set it to null
+        if (!isset($data['address']) || empty($data['address'])) {
+            $data['address'] = null;
+        }
         return $this->save($data);
     }
 
-    public function isAdmin() { return SessionManager::get('role') === 'admin'; }
+    public function isAdmin() { 
+        return SessionManager::get('role') === 'admin'; 
+    }
+    
     public function updateProfile($id, $data) {
         $data['id'] = $id;
         return $this->save($data);
     }
 }
+?>

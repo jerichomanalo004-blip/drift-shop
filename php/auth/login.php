@@ -1,3 +1,14 @@
+<link rel="stylesheet" href="/shop/css/login_reg.css?v=1.2">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+// Get form data from session if available
+$formData = $_SESSION['form_data'] ?? [];
+// Clear the session data after retrieving it
+unset($_SESSION['form_data']);
+?>
 <div class="auth-card">
     <?php if(isset($_GET['success']) && $_GET['success'] == '1'): ?>
         <div class="system-alert" style="border-color: #2ecc71; color: #2ecc71;">
@@ -18,12 +29,17 @@
     <h2>Login</h2>
     <form action="/shop/php/auth/process_login.php" method="POST">
         <div class="form-group">
-            <label for="login_email">Email / Username</label>
-            <input type="text" id="login_email" name="email" placeholder="Enter credentials" required>
+            <label for="login_email">Email Address</label>
+            <input type="text" id="login_email" name="email" value="<?php echo htmlspecialchars($formData['email'] ?? ''); ?>" placeholder="Enter credentials" required>
         </div>
-        <div class="form-group">
+        <div class="form-group password-group">
             <label for="login_pass">Password</label>
-            <input type="password" id="login_pass" name="password" placeholder="••••••••" required>
+            <div class="password-wrapper">
+                <input type="password" id="login_pass" name="password" placeholder="••••••••" required>
+                <span class="toggle-password" onclick="togglePassword('login_pass', this)">
+                    <i class="far fa-eye"></i>
+                </span>
+            </div>
             <div class="forgot-wrapper">
                 <a href="/shop/php/index.php?page=forgot-password" class="forgot-link">Forgot Password?</a>
             </div>
@@ -34,3 +50,5 @@
         New to DRIFT? <a href="/shop/php/index.php?page=register">Register</a>
     </div>
 </div>
+
+<script src="/shop/php/js/login_reg.js"></script>

@@ -6,7 +6,9 @@ require_once __DIR__ . '/../../config/autoload.php';
 
 use Core\SessionManager;
 use Core\Auth;
+use Core\Database;
 use Models\Order;
+use Models\User;
 use Services\CartService;
 
 SessionManager::start();
@@ -14,6 +16,16 @@ header('Content-Type: application/json');
 
 if (!Auth::check()) {
     echo json_encode(['success' => false, 'message' => 'Not logged in']);
+    exit;
+}
+
+// Check if user has a shipping address
+$userId = SessionManager::get('user_id');
+$userModel = new User();
+$user = $userModel->find($userId);
+
+if (empty($user['address']) || trim($user['address']) === '') {
+    echo json_encode(['success' => false, 'message' => 'Please add a shipping address before checkout', 'redirect' => '/shop/php/users/customer.php']);
     exit;
 }
 

@@ -91,7 +91,7 @@ function getProductCount($db, $brand, $department = null, $type = null, $size = 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>DRIFT Store | Browse All</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/shop/css/theme.css">
@@ -257,6 +257,7 @@ if (in_array($page, ['login', 'register', 'forgot-password', 'reset-password']))
                 </div>
             </div>
 
+            
             <div id="product-container" class="grid-view">
                 <?php foreach ($products as $product): 
                     $gallery = $productModel->getGallery($product['id']);
@@ -289,7 +290,6 @@ if (in_array($page, ['login', 'register', 'forgot-password', 'reset-password']))
                     <p style="text-align:center; grid-column:1/-1;">No products found.</p>
                 <?php endif; ?>
             </div>
-
             <div class="pagination-container">
                 <div class="pagination-buttons">
                     <?php if($page_num > 1): ?>
@@ -330,6 +330,38 @@ if (in_array($page, ['login', 'register', 'forgot-password', 'reset-password']))
 <script>const isAdmin = <?= $is_admin ? 'true' : 'false' ?>;</script>
 <script src="/shop/php/js/store.js"></script>
 <script>
+    const searchInput = document.querySelector('.header-search input[name="search"]');
+    const productContainer = document.getElementById('product-container');
+    let timer;
+
+    function updateSearch() {
+        const searchValue = searchInput.value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('search', searchValue);
+        fetch(url)
+            .then(res => res.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newContainer = doc.getElementById('product-container');
+                if (newContainer) {
+                    productContainer.innerHTML = newContainer.innerHTML;
+                }
+                // Optionally also update pagination
+                const newPagination = doc.querySelector('.pagination-container');
+                const oldPagination = document.querySelector('.pagination-container');
+                if (newPagination && oldPagination) {
+                    oldPagination.outerHTML = newPagination.outerHTML;
+                }
+            });
+    }
+
+    searchInput?.addEventListener('input', function() {
+        clearTimeout(timer);
+        timer = setTimeout(updateSearch, 400);
+    });
+
+    
 (function() {
     const originalSetView = window.setView;
     if (typeof originalSetView === 'function') {

@@ -39,6 +39,75 @@ $total_reviews = $reviewStats['total_reviews'] ?? 0;
 $average = round($reviewStats['avg_rating'] ?? 0, 1);
 ?>
 <div class="quickview-container">
+    <style>
+        .recommendation-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .recommendation-card {
+            border: 1px solid #e2e2e2;
+            background: #fff;
+            border-radius: 14px;
+            padding: 12px;
+            text-align: left;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 220px;
+        }
+        .recommendation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+        }
+        .recommendation-image-wrapper {
+            flex: 1 1 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 110px;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #fafafa;
+        }
+        .recommendation-image-wrapper img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            display: block;
+            max-height: 120px;
+        }
+        .recommendation-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .recommendation-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #111;
+            line-height: 1.3;
+            text-align: left;
+        }
+        .recommendation-price {
+            font-size: 14px;
+            font-weight: 600;
+            color: #444;
+        }
+        @media (max-width: 820px) {
+            .recommendation-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 560px) {
+            .recommendation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
     <div class="quickview-images">
         <div class="main-image-wrapper" id="zoom-container">
             <div id="img-lens"></div>
@@ -97,17 +166,63 @@ $average = round($reviewStats['avg_rating'] ?? 0, 1);
             <?= $is_in_wishlist ? "❤ IN WISHLIST" : "❤ ADD TO WISHLIST" ?>
         </button>
 
+        <?php
+        $recommendations = [];
+        if (!empty($product['category_id'])) {
+            $stmt = $db->prepare(
+                "SELECT id, product_name, main_image, price
+                 FROM products
+                 WHERE category_id = ? AND id != ?
+                 ORDER BY RAND()
+                 LIMIT 3"
+            );
+            $stmt->execute([$product['category_id'], $id]);
+            $recommendations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        ?>
+
+        <?php if (!empty($recommendations)): ?>
+            <div class="recommendations-section" style="margin-top: 40px;">
+                <h3 style="font-weight: 900; text-transform: uppercase; margin-bottom: 16px;">You may also like</h3>
+                <div class="recommendation-grid">
+                    <?php foreach ($recommendations as $rec): ?>
+                        <button type="button" class="recommendation-card" onclick="openProductModal(<?= (int)$rec['id'] ?>)">
+                            <div class="recommendation-image-wrapper">
+                                <img src="/shop/<?= htmlspecialchars($rec['main_image'] ?? '') ?>" alt="<?= htmlspecialchars($rec['product_name'] ?? '') ?>">
+                            </div>
+                            <div class="recommendation-info">
+                                <span class="recommendation-name"><?= htmlspecialchars($rec['product_name'] ?? '') ?></span>
+                                <span class="recommendation-price">₱<?= number_format((float)($rec['price'] ?? 0), 2) ?></span>
+                            </div>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <div class="reviews-display-section" style="margin-top: 50px; border-top: 1px solid #eee; padding-top: 30px;">
             <h3 style="font-weight: 900; text-transform: uppercase;">Customer Feedback</h3>
             <?php if (!empty($reviews)): ?>
-                <?php foreach ($reviews as $rev): ?>
-                    <div class="review-card" style="margin-bottom: 20px; border-bottom: 1px solid #f5f5f5; padding-bottom: 15px;">
-                        <div style="color: #FFD700;"><?= str_repeat('★', $rev['rating']) ?></div>
-                        <strong style="font-size: 14px;"><?= htmlspecialchars($rev['first_name'] ?? '') ?></strong>
-                        <p style="font-size: 13px; color: #555; margin-top: 5px;"><?= htmlspecialchars($rev['comment'] ?? '') ?></p>
-                        <small style="color: #aaa; font-size: 10px;"><?= date('M d, Y', strtotime($rev['created_at'] ?? 'now')) ?></small>
+                <div class="reviews-scroll-container">
+                    <div class="reviews-scroll-wrapper">
+                        <?php foreach ($reviews as $rev): ?>
+                            <div class="review-card-item">
+                                <div style="color: #FFD700; margin-bottom: 8px;">
+                                    <?= str_repeat('★', $rev['rating']) ?>
+                                </div>
+                                <strong style="font-size: 14px; display: block; margin-bottom: 6px;">
+                                    <?= htmlspecialchars($rev['first_name'] ?? '') ?>
+                                </strong>
+                                <p style="font-size: 13px; color: #555; margin: 8px 0; line-height: 1.4;">
+                                    <?= htmlspecialchars($rev['comment'] ?? '') ?>
+                                </p>
+                                <small style="color: #aaa; font-size: 11px;">
+                                    <?= date('M d, Y', strtotime($rev['created_at'] ?? 'now')) ?>
+                                </small>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
-                <?php endforeach; ?>
+                </div>
             <?php else: ?>
                 <p style="color: #888; font-size: 13px;">No reviews yet. Be the first to write one!</p>
             <?php endif; ?>

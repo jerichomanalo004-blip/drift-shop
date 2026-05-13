@@ -527,3 +527,132 @@ body { font-family: 'Inter', sans-serif; background: var(--white); color: var(--
 .reveal:nth-child(2) { transition-delay: 0.1s; }
 .reveal:nth-child(3) { transition-delay: 0.2s; }
 .reveal:nth-child(4) { transition-delay: 0.3s; }
+
+/* Mobile & Tablet Styles */
+@media (max-width: 768px) {
+    html, body {
+        overflow-x: hidden !important;
+    }
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+    .nav-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    /* Mobile adjustments for hero slider */
+    #hero-slider,
+    .slider-container {
+        height: auto !important;
+        min-height: 55vh;
+        position: relative;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    .slide {
+        height: auto !important;
+        min-height: 55vh;
+    }
+    .slide img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 30%;
+    }
+    .slide-content {
+        bottom: 15%;
+        left: 5%;
+        right: 5%;
+        background: rgba(0,0,0,0.6);
+        padding: 16px;
+        border-radius: 16px;
+        text-align: center;
+        width: auto;
+    }
+    .slide-content h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+    .slide-content p {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    .hero-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .btn-black {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+        display: inline-block;
+    }
+    /* Arrows */
+    .slider-arrow {
+        width: 40px;
+        height: 40px;
+        font-size: 1.8rem;
+        background: rgba(0,0,0,0.5);
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    .slider-arrow.prev {
+        left: 10px;
+    }
+    .slider-arrow.next {
+        right: 10px;
+    }
+    /* Dots */
+    .slider-dots {
+        bottom: 15px;
+    }
+    .dot {
+        width: 10px;
+        height: 10px;
+        margin: 0 6px;
+    }
+    /* Remove gap after hero section */
+    #hero-slider {
+        margin-bottom: 0 !important;
+    }
+    .clothesline-categories,
+    .categories-section,
+    .store-layout {
+        margin-top: 0;
+        padding-top: 20px; /* you can reduce this to 0 if too much */
+    }
+    .section-after-hero {
+        margin-top: 0 !important;
+    }
+    .hero-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    .hero-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .cat-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .seasonal-flex {
+        flex-direction: column;
+    }
+    .testimonial-grid {
+        grid-template-columns: 1fr;
+    }
+}

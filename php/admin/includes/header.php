@@ -29,7 +29,7 @@
                 $current = basename($_SERVER['PHP_SELF']);
                 $nodes = [
                     'dashboard.php' => ['name' => 'General Overview', 'icon' => '📈'],
-                    'products.php' => ['name' => 'Inventory Matrix', 'icon' => '📦'],
+                    'products.php' => ['name' => 'Inventory', 'icon' => '📦'],
                     'orders.php' => ['name' => 'Order Intel', 'icon' => '📋'],
                     'reports.php' => ['name' => 'Revenue Analytics', 'icon' => '📊']
                 ];

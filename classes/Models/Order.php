@@ -50,12 +50,53 @@ class Order extends Model {
         InventoryLogger::log($variant['id'], -$qty, 'sale', "Order #$orderId", $orderId);
     }
 
-    public function getUserOrders($userId, $limit = 10, $offset = 0) {
+    public function getUserOrders($userId, $limit = 10, $offset = 0, $month = '', $year = '', $status = '') {
         $limit = (int)$limit;
         $offset = (int)$offset;
-        $stmt = $this->db->prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT {$limit} OFFSET {$offset}");
-        $stmt->execute([$userId]);
+        
+        $where = ['user_id = ?'];
+        $params = [$userId];
+        
+        if ($month) {
+            $where[] = "MONTH(created_at) = ?";
+            $params[] = (int)$month;
+        }
+        if ($year) {
+            $where[] = "YEAR(created_at) = ?";
+            $params[] = (int)$year;
+        }
+        if ($status) {
+            $where[] = "status = ?";
+            $params[] = $status;
+        }
+        
+        $whereSql = implode(' AND ', $where);
+        $stmt = $this->db->prepare("SELECT * FROM orders WHERE {$whereSql} ORDER BY created_at DESC LIMIT {$limit} OFFSET {$offset}");
+        $stmt->execute($params);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+    
+    public function countUserOrders($userId, $month = '', $year = '', $status = '') {
+        $where = ['user_id = ?'];
+        $params = [$userId];
+        
+        if ($month) {
+            $where[] = "MONTH(created_at) = ?";
+            $params[] = (int)$month;
+        }
+        if ($year) {
+            $where[] = "YEAR(created_at) = ?";
+            $params[] = (int)$year;
+        }
+        if ($status) {
+            $where[] = "status = ?";
+            $params[] = $status;
+        }
+        
+        $whereSql = implode(' AND ', $where);
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM orders WHERE {$whereSql}");
+        $stmt->execute($params);
+        return (int)$stmt->fetchColumn();
     }
 
     public function getOrderItems($orderId) {

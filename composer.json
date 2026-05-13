@@ -1,0 +1,6 @@
+{
+    "require": {
+        "phpoffice/phpspreadsheet": "dev-master",
+        "dompdf/dompdf": "^3.1"
+    }
+}

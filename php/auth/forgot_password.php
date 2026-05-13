@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/shop/css/login_reg.css?v=1.2">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <div class="auth-card">
     <?php if (isset($_GET['error'])): ?>
         <div class="system-alert">

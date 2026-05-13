@@ -111,7 +111,7 @@
             <p>Discover Fashion That Goes Beyond Trends—Pieces Designed To Express Your Personality, Elevate Your Everyday Style, And Make A Statement Wherever You Go</p>
         </div>
         <div class="header-right">
-            <a href="#" class="see-all">See All ↗</a>
+            <a href="../php/store.php" class="see-all">See all ↗</a>
         </div>
     </div>
 

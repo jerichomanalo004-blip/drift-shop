@@ -174,3 +174,26 @@ a, button, .btn-primary, .btn-reg, .btn-login {
     letter-spacing: 1px;
     text-transform: uppercase;
 }
+
+
+/* 9. Responsive Table Layout */
+@media (max-width: 768px) {
+    .cart-table thead { display: none; }
+    .cart-table tr { display: block; margin-bottom: 30px; border-bottom: 2px solid #eee; }
+    .cart-table td { 
+        display: block; 
+        text-align: right; 
+        padding: 12px 0; 
+        border: none; 
+    }
+    .cart-table td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 11px;
+        color: #aaa;
+    }
+    .cart-prod-info { justify-content: flex-end; }
+    .cart-summary { align-items: center; }
+}

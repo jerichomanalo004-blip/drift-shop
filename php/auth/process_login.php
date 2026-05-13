@@ -59,11 +59,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
         }
 
+        SessionManager::start();
+        $_SESSION['form_data'] = $_POST;
         header("Location: /shop/php/index.php?page=login&error=invalid_credentials");
         exit();
 
     } catch (PDOException $e) {
         error_log("Login error: " . $e->getMessage());
+        SessionManager::start();
+        $_SESSION['form_data'] = $_POST;
         header("Location: /shop/php/index.php?page=login&error=system_fail");
         exit();
     }

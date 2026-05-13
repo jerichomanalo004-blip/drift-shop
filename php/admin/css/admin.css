@@ -366,6 +366,24 @@ body {
     font-size: 13px;
 }
 .btn-reset { font-size: 13px; color: var(--suite-text-sub); text-decoration: none; }
+.btn-receipt {
+    display: inline-block;
+    background: transparent;
+    border: 1px solid var(--border-color, #d0d7de);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-primary, #1f2328);
+    text-decoration: none;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+.btn-receipt:hover {
+    background: var(--bg-secondary, #f0f0f0);
+    border-color: var(--accent-blue, #0969da);
+    color: var(--accent-blue, #0969da);
+}
 .btn-ship {
     background: #1f883d;
     color: #fff;
@@ -378,6 +396,11 @@ body {
     transition: background 0.2s;
 }
 .btn-ship:hover { background: #1a7f37; }
+.btn-ship:disabled {
+    background: #8b949e;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
 .order-id { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 12px; }
 .badge, .status-badge {
     padding: 4px 8px;
@@ -751,4 +774,47 @@ body {
     .stat-grid { grid-template-columns: 1fr 1fr; }
     .filter-form { flex-direction: column; align-items: stretch; }
     .sidebar { display: none; }
+}
+
+/* ===== NOTIFICATION TOASTS ===== */
+.notification-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10000;
+    font-size: 14px;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.notification-toast button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+}
+
+.notification-toast.success {
+    background: #1a7f37;
+    color: white;
+}
+
+.notification-toast.info {
+    background: #0969da;
+    color: white;
+}
+
+.notification-toast.error {
+    background: #d1242f;
+    color: white;
 }

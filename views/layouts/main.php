@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>DRIFT | The Premium Topwear Collection</title>
     <link rel="stylesheet" href="/shop/css/landingPage.css?v=<?= time() ?>">
     <link rel="stylesheet" href="/shop/css/login_reg.css?v=<?= time() ?>">

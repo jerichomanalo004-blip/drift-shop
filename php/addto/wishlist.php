@@ -29,6 +29,22 @@ $items = $wishlistService->getItems();
     <link rel="stylesheet" href="/shop/css/wishlist.css">
 </head>
 <body>
+    <!-- TOP BAR (with My Account / Back to Dashboard) -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-left">
+                Free shipping · marketing@drift.com · contact@drift.com
+            </div>
+            <div class="top-bar-center"></div>
+            <div class="top-bar-right">
+                <a href="../users/customer.php" class="my-account">
+                    <img width="18" height="18" src="https://img.icons8.com/fluency-systems-regular/48/user.png" alt="user" style="vertical-align: middle; margin-right: 5px;"/>
+                    My Account
+                </a>
+            </div>
+        </div>
+    </div>
+    
     <header class="main-header">
         <div class="container">
             <div class="logo-area">
@@ -36,15 +52,16 @@ $items = $wishlistService->getItems();
             </div>
         </div>
         <style>
-        .header-logo h1 {
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            margin: 0;
+        .table-wrapper {
+            max-height: 700px;
+            overflow-y: auto;
         }
-        .header-logo a {
-            text-decoration: none;
-            color: inherit;
+
+        .wishlist-table thead th {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 1;
         }
         </style>
     </header>
@@ -83,28 +100,30 @@ $items = $wishlistService->getItems();
                     <a href="/shop/php/store.php" class="btn-add-cart" style="text-decoration:none; padding: 15px 40px;">CONTINUE SHOPPING</a>
                 </div>
             <?php else: ?>
-                <table class="wishlist-table">
-                    <thead><tr><th>Product Details</th><th>Price</th><th>Availability</th><th></th><th></th></tr></thead>
-                    <tbody>
-                        <?php foreach ($items as $product): ?>
-                        <tr class="wishlist-row" id="wish-row-<?= $product['id'] ?>">
-                            <td>
-                                <div class="wish-prod-info">
-                                    <img src="/shop/<?= htmlspecialchars($product['main_image']) ?>" alt="">
-                                    <div class="wish-prod-details">
-                                        <span class="brand-label"><?= htmlspecialchars($product['brand'] ?? '') ?></span>
-                                        <h4><?= htmlspecialchars($product['product_name'] ?? '') ?></h4>
+                <div class="table-wrapper">
+                    <table class="wishlist-table">
+                        <thead><tr><th>Product Details</th><th>Price</th><th>Availability</th><th></th><th></th></tr></thead>
+                        <tbody>
+                            <?php foreach ($items as $product): ?>
+                            <tr class="wishlist-row" id="wish-row-<?= $product['id'] ?>">
+                                <td>
+                                    <div class="wish-prod-info">
+                                        <img src="/shop/<?= htmlspecialchars($product['main_image']) ?>" alt="">
+                                        <div class="wish-prod-details">
+                                            <span class="brand-label"><?= htmlspecialchars($product['brand'] ?? '') ?></span>
+                                            <h4><?= htmlspecialchars($product['product_name'] ?? '') ?></h4>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td><span class="wishlist-price">₱<?= number_format($product['price'], 2) ?></span></td>
-                            <td><span class="stock-status in-stock">In Stock</span></td>
-                            <td><button class="btn-wish-cart" onclick="window.location.href='/shop/php/store.php?open_id=<?= $product['id'] ?>'">ADD TO CART</button></td>
-                            <td><a href="javascript:void(0)" class="remove-wish" onclick="removeWish(<?= $product['id'] ?>)" title="Remove item">&times;</a></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                                </td>
+                                <td><span class="wishlist-price">₱<?= number_format($product['price'], 2) ?></span></td>
+                                <td><span class="stock-status in-stock">In Stock</span></td>
+                                <td><button class="btn-wish-cart" onclick="window.location.href='/shop/php/store.php?open_id=<?= $product['id'] ?>'">ADD TO CART</button></td>
+                                <td><a href="javascript:void(0)" class="remove-wish" onclick="removeWish(<?= $product['id'] ?>)" title="Remove item">&times;</a></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php endif; ?>
         </div>
     </main>

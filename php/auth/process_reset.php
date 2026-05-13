@@ -5,34 +5,52 @@ ini_set('display_errors', 1);
 require_once __DIR__ . '/../../config/autoload.php';
 
 use Core\Database;
+use Models\User;
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $token = $_POST['token'];
-    $password = $_POST['password'];
-    $confirm = $_POST['confirm_password'];
+$token = $_POST['token'] ?? '';
+$password = $_POST['password'] ?? '';
+$confirmPassword = $_POST['confirm_password'] ?? '';
 
-    if ($password !== $confirm) {
-        header("Location: /shop/php/index.php?page=reset-password&token=$token&error=mismatch");
-        exit();
-    }
+if (!$token) {
+    header('Location: /shop/php/index.php?page=reset_password&error=invalid_token');
+    exit;
+}
 
-    $hashed = password_hash($password, PASSWORD_DEFAULT);
-    $token_hash = hash("sha256", $token);
-    $now = date("Y-m-d H:i:s");
+if ($password !== $confirmPassword) {
+    header('Location: /shop/php/index.php?page=reset_password&token=' . urlencode($token) . '&error=mismatch');
+    exit;
+}
 
+$passwordPattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/';
+if (!preg_match($passwordPattern, $password)) {
+    header('Location: /shop/php/index.php?page=reset_password&token=' . urlencode($token) . '&error=weak_password');
+    exit;
+}
+
+try {
     $db = Database::getInstance()->getConnection();
-    try {
-        $stmt = $db->prepare("UPDATE users SET password = ?, reset_token_hash = NULL, reset_token_expires_at = NULL WHERE reset_token_hash = ? AND reset_token_expires_at > ?");
-        $stmt->execute([$hashed, $token_hash, $now]);
 
-        if ($stmt->rowCount() > 0) {
-            header("Location: /shop/php/index.php?page=login&success=1");
-        } else {
-            header("Location: /shop/php/index.php?page=reset-password&token=$token&error=invalid_token");
-        }
-        exit();
-    } catch (PDOException $e) {
-        header("Location: /shop/php/index.php?page=reset-password&token=$token&error=system_fail");
-        exit();
+    $stmt = $db->prepare("SELECT user_id, expires_at, used FROM password_resets WHERE token = ?");
+    $stmt->execute([$token]);
+    $reset = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$reset || $reset['used'] || strtotime($reset['expires_at']) < time()) {
+        header('Location: /shop/php/index.php?page=reset_password&error=invalid_token');
+        exit;
     }
+
+    $userId = $reset['user_id'];
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+    $updateUser = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
+    $updateUser->execute([$hashedPassword, $userId]);
+
+    $markUsed = $db->prepare("UPDATE password_resets SET used = 1 WHERE token = ?");
+    $markUsed->execute([$token]);
+
+    header('Location: /shop/php/index.php?page=login&reset=success');
+    exit;
+} catch (Exception $e) {
+    header('Location: /shop/php/index.php?page=reset_password&token=' . urlencode($token) . '&error=system_fail');
+    exit;
 }

@@ -378,3 +378,60 @@ textarea {
     color: var(--suite-text-main, #333);
     font-weight: 600;
 }
+
+@media (max-width: 768px) {
+    .account-wrapper {
+        flex-direction: column;
+    }
+    .account-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+    }
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== NOTIFICATION TOASTS ===== */
+.notification-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10000;
+    font-size: 14px;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.notification-toast button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+}
+
+.notification-toast.success {
+    background: #1a7f37;
+    color: white;
+}
+
+.notification-toast.info {
+    background: #0969da;
+    color: white;
+}
+
+.notification-toast.error {
+    background: #d1242f;
+    color: white;
+}
