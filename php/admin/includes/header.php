@@ -54,7 +54,7 @@
             </li>
             <li class="node-item">
                 <a href="admin_reviews.php" class="node-link <?= ($current == 'admin_reviews.php') ? 'active' : '' ?>">
-                    <span class="node-icon">💬</span> Sentiment Data
+                    <span class="node-icon">💬</span> Customer Feedback
                 </a>
             </li>
         </ul>

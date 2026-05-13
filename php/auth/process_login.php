@@ -1,17 +1,28 @@
 <?php
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 require_once __DIR__ . '/../../config/autoload.php';
 
 use Core\Database;
 use Core\SessionManager;
+use Core\CSRF;
 
 SessionManager::start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    if (!CSRF::validate($_POST['csrf_token'] ?? null)) {
+        header("Location: /shop/php/index.php?page=login&error=invalid_credentials");
+        exit();
+    }
+
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
+        header("Location: /shop/php/index.php?page=login&error=invalid_credentials");
+        exit();
+    }
 
     $db = Database::getInstance()->getConnection();
 
@@ -22,6 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if ($user && password_verify($password, $user['password'])) {
+            session_regenerate_id(true);
             SessionManager::set('user_id', $user['id']);
             SessionManager::set('user_name', $user['first_name']);
             SessionManager::set('role', 'customer');

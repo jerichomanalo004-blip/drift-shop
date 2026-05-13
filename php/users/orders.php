@@ -1,9 +1,10 @@
 <?php
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 require_once __DIR__ . '/../../config/autoload.php';
 
+use Core\CSRF;
 use Core\SessionManager;
 use Core\Auth;
 use Models\Order;
@@ -276,5 +277,8 @@ $orders = $orderModel->getUserOrders($userId, $limit, $offset, $month, $year, $s
 </div>
 
 <script src="/shop/php/js/orders.js?v=<?= time() ?>"></script>
+<script>
+    window.csrfToken = <?= json_encode(\Core\CSRF::token()) ?>;
+</script>
 </body>
 </html>

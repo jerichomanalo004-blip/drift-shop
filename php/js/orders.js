@@ -3,7 +3,7 @@ function cancelOrder(orderId) {
         fetch('cancel_orders.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'order_id=' + orderId
+            body: 'order_id=' + orderId + '&csrf_token=' + encodeURIComponent(window.csrfToken)
         })
         .then(response => response.json())
         .then(data => {

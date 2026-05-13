@@ -28,6 +28,7 @@ unset($_SESSION['form_data']);
     
     <h2>Join the Collection</h2>
     <form action="/shop/php/auth/process_register.php" method="POST" id="registerForm">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(\Core\CSRF::token()) ?>">
         <div class="form-row">
             <div class="form-group">
                 <label>First Name</label>

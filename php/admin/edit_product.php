@@ -2,7 +2,9 @@
 require_once __DIR__ . '/includes/auth_check.php';
 require_once __DIR__ . '/../../config/autoload.php';
 
+use Core\CSRF;
 use Core\Database;
+use Core\UploadHelper;
 
 $db = Database::getInstance()->getConnection();
 $uploadPath = __DIR__ . '/../../shirts/';
@@ -35,20 +37,27 @@ $categories = $db->query("SELECT * FROM categories")->fetchAll();
 
 // Handle update
 if (isset($_POST['update'])) {
-    $product_name = $_POST['product_name'];
-    $department = $_POST['department'];
-    $category_id = (int)$_POST['category_id'];
-    $price = (float)$_POST['price'];
-    $description = $_POST['description'];
+    if (!CSRF::validate($_POST['csrf_token'] ?? null)) {
+        header("Location: products.php?error=invalid_request");
+        exit();
+    }
+
+    $product_name = trim($_POST['product_name'] ?? '');
+    $department = trim($_POST['department'] ?? '');
+    $category_id = (int)($_POST['category_id'] ?? 0);
+    $price = (float)($_POST['price'] ?? 0);
+    $description = trim($_POST['description'] ?? '');
     $is_new = isset($_POST['is_new']) ? 1 : 0;
     $automated_cost = $price * 0.70;
 
     $main_image = $product['main_image'];
     if (!empty($_FILES['main_image_file']['name'])) {
-        $fileName = time() . '_' . basename($_FILES['main_image_file']['name']);
-        if (move_uploaded_file($_FILES['main_image_file']['tmp_name'], $uploadPath . $fileName)) {
-            $main_image = "shirts/" . $fileName;
+        $savedName = UploadHelper::saveImage($_FILES['main_image_file'], $uploadPath);
+        if (!$savedName) {
+            header("Location: edit_product.php?id=$id&error=invalid_image");
+            exit();
         }
+        $main_image = "shirts/" . $savedName;
     }
 
     $db->beginTransaction();
@@ -79,12 +88,20 @@ if (isset($_POST['update'])) {
         // Handle new gallery images
         if (!empty($_FILES['extra_images']['name'][0])) {
             foreach ($_FILES['extra_images']['tmp_name'] as $key => $tmp) {
-                if (!empty($tmp)) {
-                    $extraName = time() . '_' . basename($_FILES['extra_images']['name'][$key]);
-                    if (move_uploaded_file($tmp, $uploadPath . $extraName)) {
-                        $imgStmt = $db->prepare("INSERT INTO product_images (product_id, image_path) VALUES (?, ?)");
-                        $imgStmt->execute([$id, "shirts/" . $extraName]);
-                    }
+                if (empty($_FILES['extra_images']['name'][$key])) {
+                    continue;
+                }
+                $imageFile = [
+                    'name' => $_FILES['extra_images']['name'][$key],
+                    'type' => $_FILES['extra_images']['type'][$key] ?? '',
+                    'tmp_name' => $tmp,
+                    'error' => $_FILES['extra_images']['error'][$key] ?? UPLOAD_ERR_NO_FILE,
+                    'size' => $_FILES['extra_images']['size'][$key] ?? 0,
+                ];
+                $savedName = UploadHelper::saveImage($imageFile, $uploadPath);
+                if ($savedName) {
+                    $imgStmt = $db->prepare("INSERT INTO product_images (product_id, image_path) VALUES (?, ?)");
+                    $imgStmt->execute([$id, "shirts/" . $savedName]);
                 }
             }
         }
@@ -108,6 +125,7 @@ include __DIR__ . '/includes/header.php';
 <div class="main-content">
     <div class="form-container">
         <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(\Core\CSRF::token()) ?>">
             <label>Product Specification Name</label>
             <input type="text" name="product_name" value="<?= htmlspecialchars($product['product_name']) ?>" required>
 
@@ -193,7 +211,11 @@ include __DIR__ . '/includes/header.php';
 
             <div style="display: flex; gap: 12px; margin-top: 24px;">
                 <button type="submit" name="update" class="btn-primary">Execute Database Update</button>
-                <button type="button" class="btn-danger" onclick="if(confirm('Permanently delete this product?')) window.location.href='delete_product.php?id=<?= $id ?>';">Delete Asset</button>
+                <form method="POST" action="delete_product.php" style="margin:0;">
+                    <input type="hidden" name="id" value="<?= $id ?>">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(\Core\CSRF::token()) ?>">
+                    <button type="submit" class="btn-danger" onclick="return confirm('Permanently delete this product?');">Delete Asset</button>
+                </form>
             </div>
         </form>
         <a href="products.php?page=<?= $currentPage ?>&search=<?= urlencode($currentSearch) ?>" class="btn-secondary">← Return to Asset List</a>

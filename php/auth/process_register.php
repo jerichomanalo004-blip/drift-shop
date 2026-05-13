@@ -1,21 +1,27 @@
 <?php
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 require_once __DIR__ . '/../../config/autoload.php';
 
+use Core\CSRF;
 use Core\Database;
 use Models\User;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $first_name = trim($_POST['first_name']);
+    if (!CSRF::validate($_POST['csrf_token'] ?? null)) {
+        header("Location: /shop/php/index.php?page=register&error=system_fail");
+        exit();
+    }
+
+    $first_name = trim($_POST['first_name'] ?? '');
     $last_name  = trim($_POST['last_name']);
     $birthdate  = $_POST['birthdate'];
     $gender     = $_POST['gender'];
     $contact    = trim($_POST['contact']);
-    $email      = trim($_POST['email']);
-    $password   = $_POST['password'];
-    $confirm    = $_POST['confirm_password'];
+    $email      = trim($_POST['email'] ?? '');
+    $password   = $_POST['password'] ?? '';
+    $confirm    = $_POST['confirm_password'] ?? '';
 
     // --- Validation ---
 
@@ -46,8 +52,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
+    // Email address validation
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION['form_data'] = $_POST;
+        header("Location: /shop/php/index.php?page=register&error=invalid_contact");
+        exit();
+    }
+
     // Contact number exactly 11 digits
-    if (strlen($contact) !== 11 || !ctype_digit($contact)) {
+    if (!preg_match('/^\d{11}$/', $contact)) {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }

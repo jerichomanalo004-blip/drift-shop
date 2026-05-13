@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../config/autoload.php';
 
+use Core\CSRF;
 use Core\SessionManager;
 use Core\Auth;
 use Models\Order;
@@ -14,10 +15,15 @@ if (!Auth::check()) {
     exit;
 }
 
-$userId = SessionManager::get('user_id');
 $input = json_decode(file_get_contents('php://input'), true);
-$selectedKeys = $input['selected_items'] ?? [];
-$address = $input['address'] ?? '';
+if (!CSRF::validate($input['csrf_token'] ?? null)) {
+    echo json_encode(['success' => false, 'message' => 'Invalid request']);
+    exit;
+}
+
+$userId = SessionManager::get('user_id');
+$selectedKeys = is_array($input['selected_items'] ?? null) ? $input['selected_items'] : [];
+$address = trim($input['address'] ?? '');
 
 if (empty($selectedKeys)) {
     echo json_encode(['success' => false, 'message' => 'No items selected']);

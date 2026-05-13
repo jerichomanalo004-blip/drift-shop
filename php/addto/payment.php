@@ -369,7 +369,7 @@ function completeOrder() {
     fetch('/shop/php/addto/checkout_all.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ selected_items: itemKeys, address: address })
+        body: JSON.stringify({ selected_items: itemKeys, address: address, csrf_token: window.csrfToken })
     })
     .then(res => res.json())
     .then(data => {

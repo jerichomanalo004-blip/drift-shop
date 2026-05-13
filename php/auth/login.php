@@ -28,6 +28,7 @@ unset($_SESSION['form_data']);
 
     <h2>Login</h2>
     <form action="/shop/php/auth/process_login.php" method="POST">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(\Core\CSRF::token()) ?>">
         <div class="form-group">
             <label for="login_email">Email Address</label>
             <input type="text" id="login_email" name="email" value="<?php echo htmlspecialchars($formData['email'] ?? ''); ?>" placeholder="Enter credentials" required>

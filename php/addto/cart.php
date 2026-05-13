@@ -1,6 +1,6 @@
 <?php
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 require_once __DIR__ . '/../../config/autoload.php';
 
@@ -206,6 +206,7 @@ foreach ($items as $key => $item) {
             phone: <?= json_encode($user_phone) ?>,
             address: <?= json_encode($user_address) ?>
         };
+        window.csrfToken = <?= json_encode(\Core\CSRF::token()) ?>;
 
         document.addEventListener('DOMContentLoaded', function() {
             // Initial total based on default checked state

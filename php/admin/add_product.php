@@ -2,26 +2,35 @@
 require_once __DIR__ . '/includes/auth_check.php';
 require_once __DIR__ . '/../../config/autoload.php';
 
+use Core\CSRF;
 use Core\Database;
+use Core\UploadHelper;
 
 $db = Database::getInstance()->getConnection();
 $uploadPath = __DIR__ . '/../../shirts/'; // absolute path, but we store relative in DB
 
 if (isset($_POST['save'])) {
-    $product_name = $_POST['product_name'];
-    $department = $_POST['department'];
-    $price = (float)$_POST['price'];
-    $description = $_POST['description'];
-    $category_id = (int)$_POST['category_id'];
+    if (!CSRF::validate($_POST['csrf_token'] ?? null)) {
+        header("Location: products.php?error=invalid_request");
+        exit();
+    }
+
+    $product_name = trim($_POST['product_name'] ?? '');
+    $department = trim($_POST['department'] ?? '');
+    $price = (float)($_POST['price'] ?? 0);
+    $description = trim($_POST['description'] ?? '');
+    $category_id = (int)($_POST['category_id'] ?? 0);
     $is_new = isset($_POST['is_new']) ? 1 : 0;
     $automated_cost = $price * 0.70;
 
     $main_image = '';
     if (!empty($_FILES['main_image_file']['name'])) {
-        $fileName = time() . '_' . basename($_FILES['main_image_file']['name']);
-        if (move_uploaded_file($_FILES['main_image_file']['tmp_name'], $uploadPath . $fileName)) {
-            $main_image = "shirts/" . $fileName;
+        $savedName = UploadHelper::saveImage($_FILES['main_image_file'], $uploadPath);
+        if (!$savedName) {
+            header("Location: products.php?error=invalid_image");
+            exit();
         }
+        $main_image = "shirts/" . $savedName;
     }
 
     $db->beginTransaction();
@@ -40,9 +49,19 @@ if (isset($_POST['save'])) {
         // Gallery images
         if (!empty($_FILES['extra_images']['name'][0])) {
             foreach ($_FILES['extra_images']['tmp_name'] as $key => $tmp) {
-                $extraName = time() . '_' . basename($_FILES['extra_images']['name'][$key]);
-                if (move_uploaded_file($tmp, $uploadPath . $extraName)) {
-                    $dbPath = "shirts/" . $extraName;
+                if (empty($_FILES['extra_images']['name'][$key])) {
+                    continue;
+                }
+                $imageFile = [
+                    'name' => $_FILES['extra_images']['name'][$key],
+                    'type' => $_FILES['extra_images']['type'][$key] ?? '',
+                    'tmp_name' => $tmp,
+                    'error' => $_FILES['extra_images']['error'][$key] ?? UPLOAD_ERR_NO_FILE,
+                    'size' => $_FILES['extra_images']['size'][$key] ?? 0,
+                ];
+                $savedName = UploadHelper::saveImage($imageFile, $uploadPath);
+                if ($savedName) {
+                    $dbPath = "shirts/" . $savedName;
                     $db->prepare("INSERT INTO product_images (product_id, image_path) VALUES (?,?)")->execute([$product_id, $dbPath]);
                 }
             }
@@ -70,6 +89,7 @@ include __DIR__ . '/includes/header.php';
 <div class="main-content">
     <div class="form-container">
         <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(\Core\CSRF::token()) ?>">
             <label>Asset Name / Specification</label>
             <input type="text" name="product_name" required>
 

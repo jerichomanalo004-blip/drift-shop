@@ -1,4 +1,10 @@
 <?php
+define('APP_ENV', 'production');
+error_reporting(E_ALL);
+ini_set('display_errors', APP_ENV === 'production' ? '0' : '1');
+ini_set('log_errors', '1');
+ini_set('error_log', __DIR__ . '/../logs/error.log');
+
 spl_autoload_register(function ($class) {
     $prefixes = [
         'Core\\'     => __DIR__ . '/../classes/Core/',

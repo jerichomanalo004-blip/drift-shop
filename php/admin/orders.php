@@ -2,6 +2,7 @@
 require_once __DIR__ . '/includes/auth_check.php';
 require_once __DIR__ . '/../../config/autoload.php';
 
+use Core\CSRF;
 use Core\Database;
 use Models\Order;
 
@@ -57,12 +58,17 @@ $orders = $stmt->fetchAll();
 
 // Handle status update AJAX
 if (isset($_POST['update_status'])) {
-    $orderId = (int)$_POST['order_id'];
-    $newStatus = $_POST['status'];
+    if (!CSRF::validate($_POST['csrf_token'] ?? null)) {
+        echo json_encode(['success' => false, 'message' => 'Invalid request']);
+        exit();
+    }
+
+    $orderId = (int)($_POST['order_id'] ?? 0);
+    $newStatus = $_POST['status'] ?? '';
 
     // Validate status
     $validStatuses = ['Processing', 'Shipped', 'Delivered', 'Cancelled'];
-    if (!in_array($newStatus, $validStatuses)) {
+    if (!in_array($newStatus, $validStatuses, true) || $orderId <= 0) {
         echo json_encode(['success' => false, 'message' => 'Invalid status']);
         exit();
     }
@@ -208,7 +214,7 @@ function shipOrder(orderId) {
     fetch('orders.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'update_status=1&order_id=' + orderId + '&status=Shipped'
+        body: 'update_status=1&order_id=' + orderId + '&status=Shipped&csrf_token=' + encodeURIComponent(window.csrfToken)
     })
     .then(response => response.json())
     .then(data => {
@@ -304,6 +310,10 @@ function showNotification(message, type = 'info') {
 
 setInterval(checkForNewOrders, 5000);
 setTimeout(checkForNewOrders, 5000);
+</script>
+
+<script>
+    window.csrfToken = <?= json_encode(\Core\CSRF::token()) ?>;
 </script>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

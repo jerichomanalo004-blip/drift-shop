@@ -2,10 +2,21 @@
 require_once __DIR__ . '/includes/auth_check.php';
 require_once __DIR__ . '/../../config/autoload.php';
 
+use Core\CSRF;
 use Core\Database;
 
-if (isset($_GET['id'])) {
-    $id = (int)$_GET['id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!CSRF::validate($_POST['csrf_token'] ?? null)) {
+        header("Location: products.php?error=invalid_request");
+        exit();
+    }
+
+    $id = (int)($_POST['id'] ?? 0);
+    if ($id <= 0) {
+        header("Location: products.php?error=invalid_request");
+        exit();
+    }
+
     $db = Database::getInstance()->getConnection();
     $db->beginTransaction();
     try {
